@@ -124,20 +124,6 @@ public class AsynchronousJoin implements AsynchronousProcess {
                     ConsoleLogger.fine("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                 }
             }
-
-            // Session logic
-            if (sessionManager.hasSession(name) || database.isLogged(name)) {
-                PlayerAuth auth = database.getAuth(name);
-                database.setUnlogged(name);
-                playerCache.removePlayer(name);
-                if (auth != null && auth.getIp().equals(ip)) {
-                    service.send(player, MessageKey.SESSION_RECONNECTION);
-                    bukkitService.runTaskOptionallyAsync(() -> asynchronousLogin.forceLogin(player));
-                    return;
-                } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
-                    service.send(player, MessageKey.SESSION_EXPIRED);
-                }
-            }
         } else {
             // Not Registered. Delete old data, load default one.
             limboCache.deletePlayerData(player);
